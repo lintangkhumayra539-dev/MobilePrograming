@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tugas_control_flow/login.dart';
 import 'package:tugas_control_flow/tugas_control_flow.dart';
 
 void main() {
@@ -13,6 +14,9 @@ class TugasControlFlowApp extends StatefulWidget {
 }
 
 class _TugasControlFlowAppState extends State<TugasControlFlowApp> {
+  final Map<String, String> _accounts = {};
+  String? _loggedInUsername;
+
   final List<String> _hariList = const [
     'Senin',
     'Selasa',
@@ -35,80 +39,107 @@ class _TugasControlFlowAppState extends State<TugasControlFlowApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
         useMaterial3: true,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Control Flow Web'),
-          centerTitle: true,
-        ),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 500),
-              child: Card(
-                elevation: 4,
+      home: _loggedInUsername == null
+          ? LoginPage(
+              accounts: _accounts,
+              onLoginSuccess: (username) {
+                setState(() {
+                  _loggedInUsername = username;
+                });
+              },
+            )
+          : Scaffold(
+              appBar: AppBar(
+                title: const Text('Control Flow Web'),
+                centerTitle: true,
+                actions: [
+                  IconButton(
+                    tooltip: 'Keluar',
+                    onPressed: () {
+                      setState(() {
+                        _loggedInUsername = null;
+                      });
+                    },
+                    icon: const Icon(Icons.logout),
+                  ),
+                ],
+              ),
+              body: Center(
                 child: Padding(
                   padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Text(
-                        'Pilih hari',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<String>(
-                        value: _selectedHari,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12),
-                        ),
-                        items: _hariList
-                            .map(
-                              (hari) => DropdownMenuItem(
-                                value: hari,
-                                child: Text(hari),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 500),
+                    child: Card(
+                      elevation: 4,
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              'Halo, $_loggedInUsername!',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 16),
+                            const Text(
+                              'Pilih hari',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
                               ),
-                            )
-                            .toList(),
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              _selectedHari = value;
-                            });
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        padding: const EdgeInsets.all(18),
-                        decoration: BoxDecoration(
-                          color: Colors.indigo.withOpacity(0.08),
-                          borderRadius: BorderRadius.circular(12),
+                            ),
+                            const SizedBox(height: 16),
+                            DropdownButtonFormField<String>(
+                              initialValue: _selectedHari,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                contentPadding:
+                                    EdgeInsets.symmetric(horizontal: 12),
+                              ),
+                              items: _hariList
+                                  .map(
+                                    (hari) => DropdownMenuItem(
+                                      value: hari,
+                                      child: Text(hari),
+                                    ),
+                                  )
+                                  .toList(),
+                              onChanged: (value) {
+                                if (value != null) {
+                                  setState(() {
+                                    _selectedHari = value;
+                                  });
+                                }
+                              },
+                            ),
+                            const SizedBox(height: 20),
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              padding: const EdgeInsets.all(18),
+                              decoration: BoxDecoration(
+                                color: Colors.indigo.withValues(alpha: 0.08),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                hasil,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        child: Text(
-                          hasil,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ),
-      ),
     );
   }
 }
